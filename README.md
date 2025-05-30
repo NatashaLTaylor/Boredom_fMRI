@@ -12,3 +12,14 @@ All relevant code for the time-series extraction & calculation of dynamic functi
 All relevant code for the statistical analysis and graph theoretical analysis of the data is available under "analysis".
 
 Code relevant for the creation of figures is under "figures" folder.
+
+Note: Additional Relevant code for running the following
+
+Multiplication of temporal derivatives:
+https://github.com/macshine/coupling/blob/master/coupling.m
+
+Flexibility
+https://www.pnas.org/doi/10.1073/pnas.1018985108#supplementary-materials
+
+Brain Connectivity Toolbox:
+https://sites.google.com/site/bctnet/
