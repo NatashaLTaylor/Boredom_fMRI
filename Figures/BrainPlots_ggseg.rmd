@@ -1,0 +1,229 @@
+---
+title: "Brain Plots"
+---
+
+```{r }
+#install.packages("ggseg")
+library(ggsegSchaefer)
+library(ggseg)
+library(ggseg3d)
+library(ggplot2)
+library(dplyr)
+library(stringr)
+```
+
+## Including Plots
+## Plot brain function for 17 Networks
+```{r}
+# Plot the significant coefficients on the brain
+plot_brain_data_17nets <- function(data, filename) {
+  library(ggplot2)
+  library(ggseg)
+  library(ggsegSchaefer)
+  library(dplyr)
+  library(stringr)
+  
+  # Ensure the data has a 'label' column
+  if (!"label" %in% colnames(data)) {
+    stop("The data must contain a 'label' column.")
+  }
+  
+  # Prepare the data for plotting
+  data_plot <- data %>%
+    mutate(label = ifelse(str_detect(label, "_LH"), paste0("lh_", label), paste0("rh_", label)))
+  
+  # Print the data frame to verify
+  View(data_plot)
+  
+  # Create the plot
+  p <- ggplot(data_plot, aes(fill = SignificantCoefficient)) +
+    geom_brain(atlas = schaefer17_400, show.legend = TRUE) +
+    #scale_fill_gradient2(low = "#CA1C6A", mid = "white", high = "#173F6C", midpoint = 0) +
+    scale_fill_gradient2(low = "#C03B2B", mid = "white", high = "#0C7D79", midpoint = 0) +
+    theme_void() +
+    theme(legend.position = "bottom",
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size = 14),
+          legend.key.size = unit(1.5, "cm"))
+  
+  # Print the plot
+  print(p)
+# Save the plot as an SVG file
+ggsave(paste0(filename, ".svg"), plot = p, width = 10, height = 10)
+}
+```
+```{r}
+# Plot the significant coefficients on the brain
+plot_brain_data_17nets_alt2 <- function(data, filename) {
+  library(ggplot2)
+  library(ggseg)
+  library(ggsegSchaefer)
+  library(dplyr)
+  library(stringr)
+  
+  # Ensure the data has a 'label' column
+  if (!"label" %in% colnames(data)) {
+    stop("The data must contain a 'label' column.")
+  }
+  
+  # Prepare the data for plotting
+  data_plot <- data %>%
+    mutate(label = ifelse(str_detect(label, "_LH"), paste0("lh_", label), paste0("rh_", label)))
+  
+  # Print the data frame to verify
+  View(data_plot)
+  
+  # Create the plot
+  p <- ggplot(data_plot, aes(fill = SignificantCoefficient)) +
+    geom_brain(atlas = schaefer17_400, show.legend = TRUE) +
+    #scale_fill_gradient2(low = "#CA1C6A", mid = "white", high = "#173F6C", midpoint = 0) +
+    scale_fill_gradient2(low = "#a58bbd", mid = "white", high = "#9cbe9d", midpoint = 0) +
+    theme_void() +
+    theme(legend.position = "bottom",
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size = 14),
+          legend.key.size = unit(1.5, "cm"))
+  
+  # Print the plot
+  print(p)
+# Save the plot as an SVG file
+ggsave(paste0(filename, ".svg"), plot = p, width = 10, height = 10)
+}
+```
+
+## Plot Brain Alternative Colours
+```{r}
+# Plot the significant coefficients on the brain
+plot_brain_17nets_blueorange <- function(data, filename) {
+  library(ggplot2)
+  library(ggseg)
+  library(ggsegSchaefer)
+  library(dplyr)
+  library(stringr)
+  
+  # Ensure the data has a 'label' column
+  if (!"label" %in% colnames(data)) {
+    stop("The data must contain a 'label' column.")
+  }
+  
+  # Prepare the data for plotting
+  data_plot <- data %>%
+    mutate(label = ifelse(str_detect(label, "_LH"), paste0("lh_", label), paste0("rh_", label)))
+  
+  # Print the data frame to verify
+  View(data_plot)
+  
+  # Create the plot
+  p <- ggplot(data_plot, aes(fill = SignificantCoefficient)) +
+    geom_brain(atlas = schaefer17_400, show.legend = TRUE) +
+    #scale_fill_gradient2(low = "#CA1C6A", mid = "white", high = "#173F6C", midpoint = 0) +
+    scale_fill_gradient2(low = "#f9a340", mid = "white", high =  "#7fb6cc", midpoint = 0) +
+    theme_void() +
+    theme(legend.position = "bottom",
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size = 14),
+          legend.key.size = unit(1.5, "cm"))
+  
+  # Print the plot
+  print(p)
+# Save the plot as an SVG file
+ggsave(paste0(filename, ".svg"), plot = p, width = 10, height = 10)
+}
+```
+
+## Brain plots onto 7 network schaefer 400
+```{r}
+# Plot the significant coefficients on the brain
+plot_brain_data_7nets <- function(data, filename) {
+  library(ggplot2)
+  library(ggseg)
+  library(ggsegSchaefer)
+  library(dplyr)
+  library(stringr)
+  
+  # Ensure the data has a 'label' column
+  if (!"label" %in% colnames(data)) {
+    stop("The data must contain a 'label' column.")
+  }
+  
+  # Prepare the data for plotting
+  data_plot <- data %>%
+    mutate(label = ifelse(str_detect(label, "_LH"), paste0("lh_", label), paste0("rh_", label)))
+  
+  # Print the data frame to verify
+  View(data_plot)
+  
+  # Create the plot
+  p <- ggplot(data_plot, aes(fill = SignificantCoefficient)) +
+    geom_brain(atlas = schaefer7_400, show.legend = TRUE) +
+    #scale_fill_gradient2(low = "#CA1C6A", mid = "white", high = "#173F6C", midpoint = 0) +
+    scale_fill_gradient2(low = "#C03B2B", mid = "white", high = "#0C7D79", midpoint = 0) +
+    theme_void() +
+    theme(legend.position = "bottom",
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size = 14),
+          legend.key.size = unit(1.5, "cm"))
+  
+  # Print the plot
+  print(p)
+# Save the plot as an SVG file
+ggsave(paste0(filename, ".svg"), plot = p, width = 10, height = 10)
+}
+```
+## Generate brain plots for FC
+```{r }
+
+#load the data
+data <- read.csv('/Users/ntaylor/Library/CloudStorage/OneDrive-TheUniversityofSydney(Staff)/PhD/7. Boredom- Danckert/HCP_boredom_backup/model/ordinal_boredom/ordinal_boredom_polr_functional_connectivity_never_vs_often_502roi_fdr.csv', header= TRUE)
+# load in regions names
+schaef_names <- read.csv("/Users/ntaylor/Library/CloudStorage/OneDrive-TheUniversityofSydney(Staff)/PhD/7. Boredom- Danckert/HCP_boredom_backup/Code/Github_code/Figures/schaef_names.csv", header = TRUE, stringsAsFactors = FALSE)
+regions = schaef_names$ROI.Name
+label <- schaef_names$ROI.Name
+
+# Create a data frame for plotting
+data_plot <- data.frame(label = label[1:400], SignificantCoefficient = data$V1[1:400])
+
+# Print the data frame to verify
+View(data_plot)
+
+#plot onto the brain
+setwd('/Users/ntaylor/Library/CloudStorage/OneDrive-TheUniversityofSydney(Staff)/PhD/7. Boredom- Danckert/HCP_boredom_backup/model/ordinal_boredom/figures')
+plot_brain_data_17nets(data_plot, "estimate_DSM_Hyperactive_FC_17nets")
+
+```
+
+
+## Dorsal Attentional
+```{r}
+data_plot <- data.frame(
+  label = label[1:400],
+  SignificantCoefficient = rep(0, 400)
+)
+
+# Identify indices for "SalVentAttn" regions
+dorsattn_par_indices <- which(grepl("DorsAttn", data_plot$label))
+
+# Replace zeros with corresponding values from data$V1 for "SalVentAttn" regions
+data_plot$SignificantCoefficient[dorsattn_par_indices] <- data$V1[dorsattn_par_indices]
+
+setwd('/Users/ntaylor/Library/CloudStorage/OneDrive-TheUniversityofSydney(Staff)/PhD/7. Boredom- Danckert/HCP_boredom_backup/model/ordinal_boredom/figures')
+plot_brain_data_17nets(data_plot, "mean_diff_del_health_pc_avg_time_dorsattn")
+```
+## Default Mode Networks
+
+```{r}
+data_plot <- data.frame(
+  label = label[1:400],
+  SignificantCoefficient = rep(0, 400)
+)
+
+# Identify indices for "SalVentAttn" regions
+default_par_indices <- which(grepl("Default", data_plot$label))
+
+# Replace zeros with corresponding values from data$V1 for "SalVentAttn" regions
+data_plot$SignificantCoefficient[default_par_indices] <- data$V1[default_par_indices]
+
+setwd('/Users/ntaylor/Library/CloudStorage/OneDrive-TheUniversityofSydney(Staff)/PhD/7. Boredom- Danckert/HCP_boredom_backup/model/ordinal_boredom/figures')
+plot_brain_data_17nets(data_plot, "mean_diff_del_health_pc_avg_time_default")
+```
+
