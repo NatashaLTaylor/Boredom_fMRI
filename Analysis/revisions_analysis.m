@@ -188,7 +188,7 @@ end
 %% Box plots for differences in FC avg for the networks - across all 3 groups :
 
 flat_fc %all subjects data
- member_bored(:,4) %contains the 0, 1 ,2 variables for the grouping
+member_bored(:,4) %contains the 0, 1 ,2 variables for the grouping
 
 
 % with the individual data points plotted
@@ -273,6 +273,136 @@ end
 exportgraphics(fig3_nonsig_fc_allgrp,'/Users/ntaylor/Library/CloudStorage/OneDrive-TheUniversityofSydney(Staff)/PhD/7. Boredom- Danckert/Manuscript_CABN/Figures/Avg_FC_NonSig_AllGrp.svg','ContentType','vector');
 
 
+% variability for all 3 groups
+% --- Compute variability for all 3 groups ---
+grp0_sd_avg = NaN(1, nNets);
+grp1_sd_avg = NaN(1, nNets);
+grp2_sd_avg = NaN(1, nNets);
+
+grp0_subj_var = [];
+grp1_subj_var = [];
+grp2_subj_var = [];
+
+for n = 1:nNets
+    roi_mask = (net_idx == n);
+    
+    block_mask = roi_mask * roi_mask';
+    block_mask = tril(block_mask, -1);
+    sig_block = sig_fc_mat & block_mask;
+    sig_block_vec = sig_block(template);
+    
+    nSigEdges = sum(sig_block_vec);
+    
+    if nSigEdges > 0
+        fc_grp0 = grp0_fc(:, sig_block_vec);
+        fc_grp1 = grp1_fc(:, sig_block_vec);
+        fc_grp2 = grp2_fc(:, sig_block_vec);
+        
+        grp0_sd_avg(n) = mean(nanstd(fc_grp0, 0, 1));
+        grp1_sd_avg(n) = mean(nanstd(fc_grp1, 0, 1));
+        grp2_sd_avg(n) = mean(nanstd(fc_grp2, 0, 1));
+        
+        grp0_mean_fc = nanmean(fc_grp0, 1);
+        grp1_mean_fc = nanmean(fc_grp1, 1);
+        grp2_mean_fc = nanmean(fc_grp2, 1);
+        
+        grp0_subj_var(:, n) = mean(abs(fc_grp0 - grp0_mean_fc), 2);
+        grp1_subj_var(:, n) = mean(abs(fc_grp1 - grp1_mean_fc), 2);
+        grp2_subj_var(:, n) = mean(abs(fc_grp2 - grp2_mean_fc), 2);
+    else
+        grp0_subj_var(:, n) = NaN(size(grp0_fc, 1), 1);
+        grp1_subj_var(:, n) = NaN(size(grp1_fc, 1), 1);
+        grp2_subj_var(:, n) = NaN(size(grp2_fc, 1), 1);
+    end
+end
+
+% --- Plotting ---
+col_grp0 = [193, 170, 211] / 255;  % light purple (Never)
+col_grp1 = [168, 213, 186] / 255;  % light green (Sometimes)
+col_grp2 = [20, 90, 50] / 255;     % dark green (Often)
+
+col_grp0_light = 1 - 0.5 * (1 - col_grp0);
+col_grp1_light = 1 - 0.5 * (1 - col_grp1);
+col_grp2_light = 1 - 0.5 * (1 - col_grp2);
+
+fig_fc_sd_allgrp = figure('Position', [100 100 1400 600], 'Theme', 'light');
+set(gcf, 'color', 'w')
+
+for n = 1:nNets
+    subplot(2, 6, n); hold on;
+    
+    data_grp0 = grp0_subj_var(:, n);
+    data_grp1 = grp1_subj_var(:, n);
+    data_grp2 = grp2_subj_var(:, n);
+    
+    ylabel('FC Variability');
+    set(gca, 'FontSize', 8);
+    
+    if all(isnan(data_grp0))
+        title(net_labels{n}, 'FontSize', 9);
+        text(0.5, 0.5, 'No edges', 'HorizontalAlignment', 'center', 'Units', 'normalized');
+        axis normal;
+        ylim([0 0.5]);
+        continue;
+    end
+    
+    % --- Boxplot (3 groups) ---
+    all_data = [data_grp0; data_grp1; data_grp2];
+    group_label = [ones(length(data_grp0), 1); 2 * ones(length(data_grp1), 1); 3 * ones(length(data_grp2), 1)];
+    
+    bp = boxplot(all_data, group_label, 'Labels', {'Never', 'Sometimes', 'Often'}, 'Widths', 0.6);
+    set(findobj(gca, 'Tag', 'Whisker'), 'Visible', 'off');
+    set(findobj(gca, 'Tag', 'Lower Adjacent Value'), 'Visible', 'off');
+    set(findobj(gca, 'Tag', 'Upper Adjacent Value'), 'Visible', 'off');
+    
+    % Colour the boxes
+    h = findobj(gca, 'Tag', 'Box');
+    if length(h) >= 3
+        patch(get(h(3), 'XData'), get(h(3), 'YData'), col_grp0, 'FaceAlpha', 0.5);
+        patch(get(h(2), 'XData'), get(h(2), 'YData'), col_grp1, 'FaceAlpha', 0.5);
+        patch(get(h(1), 'XData'), get(h(1), 'YData'), col_grp2, 'FaceAlpha', 0.5);
+    end
+    
+    % --- Individual subject points (jittered) ---
+    jitter_width = 0.15;
+    
+    jitter_grp0 = 1 + jitter_width * (rand(length(data_grp0), 1) - 0.5);
+    scatter(jitter_grp0, data_grp0, 20, col_grp0_light, 'filled', ...
+        'MarkerEdgeColor', 'none', 'MarkerFaceAlpha', 0.6);
+    
+    jitter_grp1 = 2 + jitter_width * (rand(length(data_grp1), 1) - 0.5);
+    scatter(jitter_grp1, data_grp1, 20, col_grp1_light, 'filled', ...
+        'MarkerEdgeColor', 'none', 'MarkerFaceAlpha', 0.6);
+    
+    jitter_grp2 = 3 + jitter_width * (rand(length(data_grp2), 1) - 0.5);
+    scatter(jitter_grp2, data_grp2, 20, col_grp2_light, 'filled', ...
+        'MarkerEdgeColor', 'none', 'MarkerFaceAlpha', 0.6);
+    
+    % --- SD error bars ---
+    mean_grp0 = nanmean(data_grp0);
+    sd_grp0   = nanstd(data_grp0);
+    mean_grp1 = nanmean(data_grp1);
+    sd_grp1   = nanstd(data_grp1);
+    mean_grp2 = nanmean(data_grp2);
+    sd_grp2   = nanstd(data_grp2);
+    
+    errorbar(1, mean_grp0, sd_grp0, 'k', 'LineWidth', 1, 'Marker', 'o', ...
+        'MarkerSize', 3, 'MarkerFaceColor', col_grp0, 'MarkerEdgeColor', 'k', 'CapSize', 10);
+    errorbar(2, mean_grp1, sd_grp1, 'k', 'LineWidth', 1, 'Marker', 'o', ...
+        'MarkerSize', 3, 'MarkerFaceColor', col_grp1, 'MarkerEdgeColor', 'k', 'CapSize', 10);
+    errorbar(3, mean_grp2, sd_grp2, 'k', 'LineWidth', 1, 'Marker', 'o', ...
+        'MarkerSize', 3, 'MarkerFaceColor', col_grp2, 'MarkerEdgeColor', 'k', 'CapSize', 10);
+    
+    % Title with network name only (no significance)
+    title(net_labels{n}, 'FontSize', 10, 'FontWeight', 'bold');
+    ylabel('FC Variability');
+    set(gca, 'FontSize', 8);
+    
+    axis normal;
+    ylim([0 0.5]);
+end
+
+exportgraphics(fig_fc_sd_allgrp, '/Users/ntaylor/Library/CloudStorage/OneDrive-TheUniversityofSydney(Staff)/PhD/7. Boredom- Danckert/Manuscript_CABN/Figures/VariabilityFC_Sig_AllGrp.svg', 'ContentType', 'vector');
 
 
 

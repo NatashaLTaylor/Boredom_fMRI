@@ -245,9 +245,17 @@ for n = 1:nNets
     data_grp0 = grp0_subj_var(:, n);
     data_grp2 = grp2_subj_var(:, n);
     
+    % --- Common Formatting Prep ---
+    ylabel('FC Variability');
+    set(gca, 'FontSize', 8);
+    
     if all(isnan(data_grp0))
         title(net_labels{n}, 'FontSize', 9);
         text(0.5, 0.5, 'No edges', 'HorizontalAlignment', 'center', 'Units', 'normalized');
+        
+        % Force limits and normalize even for empty plots to prevent scaling distortion
+        axis normal;
+        ylim([0 0.5]); 
         continue;
     end
     
@@ -302,8 +310,11 @@ for n = 1:nNets
         'MarkerSize', 3, 'MarkerFaceColor', col_grp2, 'MarkerEdgeColor', 'k', 'CapSize', 10);
     
     title({net_labels{n}, p_str}, 'FontSize', 10, 'FontWeight', 'bold');
-    ylabel('FC Variability (MAD)');
+    ylabel('FC Variability');
     set(gca, 'FontSize', 8);
+        % --- CRITICAL FIXES FOR AXIS EXTENSION ---
+    axis normal;     % Unlocks the boxplot geometric aspect ratio constraints
+    ylim([0 0.5]);   % Enforces the strict maximum ceiling of 0.5
 end
 
 exportgraphics(fig_fc_sd,'/Users/ntaylor/Library/CloudStorage/OneDrive-TheUniversityofSydney(Staff)/PhD/7. Boredom- Danckert/Manuscript_CABN/Figures/VariabilityFC_Sig_Grp0_Grp2.svg','ContentType','vector');
